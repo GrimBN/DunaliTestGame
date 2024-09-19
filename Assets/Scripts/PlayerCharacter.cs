@@ -17,20 +17,29 @@ public class PlayerCharacter : CharacterBase
     {
         if (canAct && PlayerInput())
         {
-            Vector3Int direction = new Vector3Int(Mathf.RoundToInt(Input.GetAxisRaw("Horizontal")), Mathf.RoundToInt(Input.GetAxisRaw("Vertical")), 0);
-            
-            if(CheckTargetCellEmpty(grid.LocalToCell(transform.localPosition) + direction))
+            Vector3Int direction = Vector3Int.RoundToInt(new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0));
+            Vector3Int currentGridPos = grid.LocalToCell(transform.localPosition);
+            Vector3Int targetGridPos = currentGridPos + direction;
+
+            Turn(direction);
+            if (animator)
             {
-                RelativeMoveTo(direction);
-                Turn(direction);
+                animator.SetBool("Moving", true);
             }
-            canAct = false;
+            
+            if (CheckTargetCellEmpty(targetGridPos))
+            {
 
-
+                
+                
+                RelativeMoveTo(direction);
+                canAct = false;
+            }
         }
         else if (canAct && animator.GetBool("Moving"))
         {
             animator.SetBool("Moving", false);
+            //animMarkedForDisable = false;
         }
     }
 
@@ -42,7 +51,9 @@ public class PlayerCharacter : CharacterBase
     private void OnMoveFinished()
     {
         canAct = true;
-        if(animator && !PlayerInput())
+        if(!animator) { return; }
+
+        if(!PlayerInput())
         {
             animator.SetBool("Moving", false);
         }

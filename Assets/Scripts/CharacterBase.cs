@@ -10,10 +10,13 @@ public abstract class CharacterBase : MonoBehaviour
     [SerializeField] protected int maxHealth;
     [SerializeField] protected Animator animator;
     [SerializeField] protected Grid grid;
+    [SerializeField] protected LayerMask layerMask1;
 
     protected int currentHealth;
 
     protected bool isAlive;
+
+    private Vector3 gizmoPoint;
 
     public event MoveDelegate MoveFinished;
 
@@ -25,6 +28,10 @@ public abstract class CharacterBase : MonoBehaviour
         transform.localPosition = GetLocalPosFromCellPos(Vector3Int.zero);
         animator = GetComponent<Animator>();
 
+    }
+    private void OnDrawGizmos() 
+    {
+        Gizmos.DrawCube(gizmoPoint, Vector3.one * 0.8f);
     }
 
     private void Start() 
@@ -49,16 +56,16 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected bool CheckTargetCellEmpty(Vector3Int cellPosition)
     {
-        Vector3 boxCastCenter = transform.position;
-        Bounds bounds = grid.GetBoundsLocal(cellPosition);
-        Vector3 posCheck = grid.LocalToWorld(GetLocalPosFromCellPos(cellPosition));
-        Vector3 direction = (posCheck - boxCastCenter).normalized;
+        Bounds bounds = grid.GetBoundsLocal(cellPosition) ;
+        //Vector3 posCheck = grid.LocalToWorld(GetLocalPosFromCellPos(cellPosition));
+        //Vector3 direction = posCheck - boxCastCenter;
 
-        LayerMask layerMask = LayerMask.NameToLayer("Hurdle");
-        
-        if (Physics.BoxCast(boxCastCenter, bounds.extents, direction, out RaycastHit hit, Quaternion.identity, (posCheck - boxCastCenter).magnitude))
+        LayerMask layerMask = LayerMask.GetMask("Hurdle");
+        gizmoPoint = bounds.center + Vector3.one * 0.5f;
+        Collider[] colliders = Physics.OverlapBox(gizmoPoint, bounds.extents * 0.8f, Quaternion.identity, layerMask);
+        if (colliders.Length > 0)
         {
-            Debug.Log(hit.collider.gameObject.name);
+            Debug.Log(colliders[0].gameObject.name);
             return false;
         }
         return true;
@@ -69,11 +76,6 @@ public abstract class CharacterBase : MonoBehaviour
         Vector3 startPos = transform.localPosition;
         float speed = Vector3.Distance(startPos, targetPos) / GameController.Instance.CharacterMoveTime;
         float timer = 0f;
-
-        if (animator)
-        {
-            animator.SetBool("Moving", true);
-        }
 
         while ( timer < GameController.Instance.CharacterMoveTime)// && Vector3.Distance(transform.localPosition, targetPos) > 0.01f)
         {
