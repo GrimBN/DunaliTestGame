@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33841542590858422}
   - component: {fileID: 23733905104197934}
   - component: {fileID: 64819107711435158}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Rock1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,6 +103,6 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300004, guid: 7e7c5a68504558b45bd9e9301d6c579b, type: 3}
