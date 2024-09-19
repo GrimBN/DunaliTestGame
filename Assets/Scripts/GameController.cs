@@ -5,8 +5,22 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
 
-    [SerializeField]private static float characterMoveTime = 5f;
-    public static float CharacterMoveTime { get => characterMoveTime;}
+    [SerializeField]private float characterMoveTime = 0.5f;
+    public float CharacterMoveTime { get => characterMoveTime;}
+
+    public static GameController Instance;
+
+    private void Awake() 
+    {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     void Start()
     {
         
