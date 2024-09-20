@@ -21,8 +21,8 @@ public class PlayerCharacter : CharacterBase
         canAct = true;
         GameController.Instance.RegisterPlayer(this);
 
-        AttackAnimationFinished = new AnimationEvent();
-        AttackAnimationFinished.time = attackAnimationClip.length;
+        AttackAnimationFinished = new AnimationEvent();             //Adding an event to attack animation to have weapon properly switch between
+        AttackAnimationFinished.time = attackAnimationClip.length;  //resting and attacking positions
         AttackAnimationFinished.functionName = "OnAttackFinished";
         attackAnimationClip.AddEvent(AttackAnimationFinished);
     }
@@ -55,9 +55,7 @@ public class PlayerCharacter : CharacterBase
         LayerMask layerMask = LayerMask.GetMask("Hurdle");
         if (!CheckTargetCellForObjects(targetGridPos, layerMask, out Collider hitCollider))
         {
-
             MoveTo(targetGridPos);
-            //canAct = false;
         }
         else
         {

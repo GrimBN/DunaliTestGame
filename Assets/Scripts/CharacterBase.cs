@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public delegate void  BasicDelegate();
@@ -31,7 +30,7 @@ public abstract class CharacterBase : MonoBehaviour
     public event ActionDelegate ActionFinished;
     public event ActionDelegate CharacterDied;
 
-    private Vector3 gizmoCenter, gizmoSize;
+    //private Vector3 gizmoCenter, gizmoSize;
 
     protected void InitBase()
     {
@@ -47,11 +46,11 @@ public abstract class CharacterBase : MonoBehaviour
     {
         InitBase();
     }
-
+/* 
     private void OnDrawGizmos() 
     {
         Gizmos.DrawCube(gizmoCenter, gizmoSize);
-    }
+    } */
 
 /// <summary>
 /// Makes the character move to a location on the grid
@@ -100,8 +99,8 @@ public abstract class CharacterBase : MonoBehaviour
         Bounds bounds = grid.GetBoundsLocal(relativeGridPosition) ;
         Vector3 boxCenter = bounds.center + Vector3.one * 0.5f;
         Vector3 boxSize =  new Vector3(bounds.extents.x * 0.8f, bounds.extents.y * 2f, bounds.extents.z * 0.8f);
-        gizmoCenter = boxCenter;
-        gizmoSize = boxSize;
+        //gizmoCenter = boxCenter;
+        //gizmoSize = boxSize;
 
         Collider[] colliders = Physics.OverlapBox(boxCenter, boxSize, Quaternion.identity, layerMask);
         hitCollider = null;

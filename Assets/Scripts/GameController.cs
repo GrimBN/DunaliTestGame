@@ -72,14 +72,6 @@ public class GameController : MonoBehaviour
 
     private void CharacterTookAction(CharacterBase character)
     {
-        /* if(character == player)
-        {
-            AllowOtherCharacterActions();
-        }
-        else
-        {
-            enemiesLeftToTakeAction--;
-        } */
         character.CanAct = false;
     }
 

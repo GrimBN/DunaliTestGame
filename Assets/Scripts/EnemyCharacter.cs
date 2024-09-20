@@ -15,8 +15,6 @@ public class EnemyCharacter : CharacterBase
 
     private Coroutine patrolCoroutine;
 
-    //[SerializeField] private DamageTypes damageTypeVulnerableTo;
-
     void Start()
     {
         InitBase();
@@ -35,7 +33,6 @@ public class EnemyCharacter : CharacterBase
 
         MoveFinished += OnMoveFinished;
         CharacterDied += OnDeath;
-        //canAct = true;
     }
 
     private IEnumerator Patrol()
@@ -51,13 +48,8 @@ public class EnemyCharacter : CharacterBase
             OnActionInitiated();
             Vector3Int currentGridPos = grid.LocalToCell(transform.localPosition);
             Vector3Int targetGridPos = startGridPos + modifiedWaypoints[i];
-
-            /* if (animator)
-            {
-                animator.SetBool("Moving", true);
-            } */
-
             Vector3Int relativeGridPos = targetGridPos - currentGridPos;
+
             Turn(relativeGridPos);
 
             LayerMask layerMask = LayerMask.GetMask("Player");
