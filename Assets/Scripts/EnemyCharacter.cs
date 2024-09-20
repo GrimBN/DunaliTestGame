@@ -13,13 +13,15 @@ public class EnemyCharacter : CharacterBase
 
     private Vector3Int startGridPos;
 
-    [SerializeField] private DamageTypes damageTypeVulnerableTo;
+    private Coroutine patrolCoroutine;
+
+    //[SerializeField] private DamageTypes damageTypeVulnerableTo;
 
     void Start()
     {
         InitBase();
         Init();
-        StartCoroutine(Patrol());
+        patrolCoroutine = StartCoroutine(Patrol());
     }
 
     private void Init()
@@ -32,6 +34,7 @@ public class EnemyCharacter : CharacterBase
         GameController.Instance.RegisterEnemy(this);
 
         MoveFinished += OnMoveFinished;
+        CharacterDied += OnDeath;
         //canAct = true;
     }
 
@@ -94,7 +97,10 @@ public class EnemyCharacter : CharacterBase
         /* if(!animator) { return; }
 
         animator.SetBool("Moving", false); */
-        
+    }
 
+    private void OnDeath(CharacterBase character)
+    {
+        StopCoroutine(patrolCoroutine);
     }
 }

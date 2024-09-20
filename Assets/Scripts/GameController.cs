@@ -36,10 +36,12 @@ public class GameController : MonoBehaviour
     {
         enemiesLeftToTakeAction = enemies.Count;
         player.CanAct = true;
+        player.TurnTaken = false;
 
         foreach(EnemyCharacter enemy in enemies)
         {
             enemy.CanAct = false;
+            enemy.TurnTaken = false;
         }
     }
 
@@ -48,6 +50,7 @@ public class GameController : MonoBehaviour
         enemies.Add(enemy);
         enemy.ActionInitiated += CharacterTookAction;
         enemy.ActionFinished += CharacterFinishedAction;
+        enemy.CharacterDied += CharacterDeathOccured;
     }
 
     public void RegisterPlayer(PlayerCharacter playerCharacter)
@@ -78,10 +81,38 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            enemiesLeftToTakeAction--;
-            if(enemiesLeftToTakeAction <= 0)
+            enemiesLeftToTakeAction--;            
+        }
+
+        if(enemiesLeftToTakeAction <= 0)
+        {
+            ProcessEndTurn();
+        }
+    }
+
+    private void CharacterDeathOccured(CharacterBase character)
+    {
+        if(character == player)
+        {
+            //handle game over
+        }
+        else
+        {
+            foreach(EnemyCharacter enemy in enemies)
             {
-                ProcessEndTurn();
+                if(enemy == character)
+                {
+                    enemies.Remove(enemy);
+                    if(!enemy.TurnTaken)
+                    {
+                        enemiesLeftToTakeAction--;
+                        if (enemiesLeftToTakeAction <= 0)
+                        {
+                            ProcessEndTurn();
+                        }
+                    }
+                    break;
+                }
             }
         }
     }

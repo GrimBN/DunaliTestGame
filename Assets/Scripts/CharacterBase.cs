@@ -21,15 +21,17 @@ public abstract class CharacterBase : MonoBehaviour
     protected int currentHealth;
     protected bool isAlive;
     protected bool canAct;
-    public bool CanAct { get=>canAct; set=>canAct = value;}
+    public bool CanAct { get => canAct; set => canAct = value; }
+    private bool turnTaken;
+    public bool TurnTaken { get => turnTaken; set => turnTaken = value; }
 
     public event BasicDelegate MoveFinished;
     public event BasicDelegate AttackFinished;
     public event ActionDelegate ActionInitiated;
     public event ActionDelegate ActionFinished;
+    public event ActionDelegate CharacterDied;
 
-    //private Vector3 gizmoCenter, gizmoSize;
-
+    private Vector3 gizmoCenter, gizmoSize;
 
     protected void InitBase()
     {
@@ -46,10 +48,10 @@ public abstract class CharacterBase : MonoBehaviour
         InitBase();
     }
 
-    /* private void OnDrawGizmos() 
+    private void OnDrawGizmos() 
     {
         Gizmos.DrawCube(gizmoCenter, gizmoSize);
-    } */
+    }
 
 /// <summary>
 /// Makes the character move to a location on the grid
@@ -98,8 +100,8 @@ public abstract class CharacterBase : MonoBehaviour
         Bounds bounds = grid.GetBoundsLocal(relativeGridPosition) ;
         Vector3 boxCenter = bounds.center + Vector3.one * 0.5f;
         Vector3 boxSize =  new Vector3(bounds.extents.x * 0.8f, bounds.extents.y * 2f, bounds.extents.z * 0.8f);
-        //gizmoCenter = boxCenter;
-        //gizmoSize = boxSize;
+        gizmoCenter = boxCenter;
+        gizmoSize = boxSize;
 
         Collider[] colliders = Physics.OverlapBox(boxCenter, boxSize, Quaternion.identity, layerMask);
         hitCollider = null;
@@ -168,7 +170,7 @@ public abstract class CharacterBase : MonoBehaviour
 
         if(CheckTargetCellForObjects(targetGridPos, attackLayer, out Collider hitCollider))
         {
-            if(hitCollider.TryGetComponent(out CharacterBase hitCharacter))
+            if(hitCollider.gameObject.TryGetComponent(out CharacterBase hitCharacter))
             {
                 hitCharacter.HandleHit(damage, damageType);
             }
@@ -184,7 +186,8 @@ public abstract class CharacterBase : MonoBehaviour
             DamageTypes.Blunt => bluntResistance,
             _ => 100f,
         };
-        float modifedDamage = damage * resistanceTouse / 100f;
+
+        float modifedDamage = damage * (100f - resistanceTouse) / 100f;
         ApplyDamage(Mathf.FloorToInt(modifedDamage));
     }
 
@@ -201,11 +204,11 @@ public abstract class CharacterBase : MonoBehaviour
         }
     }
 
-
     private void HandleDeath()
     {
         isAlive = false;
         animator.SetTrigger("Death");
+        CharacterDied?.Invoke(this);
     }
 
     protected virtual void OnActionInitiated()
@@ -223,6 +226,7 @@ public abstract class CharacterBase : MonoBehaviour
         {
             animator.speed = 1;
         }
+        turnTaken = true;
         ActionFinished?.Invoke(this);
     }
 
