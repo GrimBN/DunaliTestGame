@@ -13,15 +13,22 @@ public class EnemyCharacter : CharacterBase
 
     void Start()
     {
+        InitBase();
         Init();
+        StartCoroutine(Patrol());
+    }
+
+    private void Init()
+    {
         startGridPos = grid.LocalToCell(transform.localPosition);
 
         modifiedWaypoints = new Vector3Int[waypoints.Length + 1];
         waypoints.CopyTo(modifiedWaypoints, 1); //Adds the starting position to the waypoints
 
+        GameController.Instance.RegisterEnemy(this);
+
         MoveFinished += OnMoveFinished;
-        canAct = true;
-        StartCoroutine(Patrol());
+        //canAct = true;
     }
 
     private IEnumerator Patrol()
@@ -29,13 +36,19 @@ public class EnemyCharacter : CharacterBase
         int loopDirection = 1;
         for(int i = 1; i < modifiedWaypoints.Length && i >=0; i+= loopDirection) //Start at index 1 to skip start position
         {
+            while (!canAct) //yield condition that makes enemy wait until next available turn
+            {
+                yield return null;
+            }
+
+            OnActionInitiated();
             Vector3Int currentGridPos = grid.LocalToCell(transform.localPosition);
             Vector3Int targetGridPos = startGridPos + modifiedWaypoints[i];
 
-            if (animator)
+            /* if (animator)
             {
                 animator.SetBool("Moving", true);
-            }
+            } */
 
             Vector3Int relativeGridPos = targetGridPos - currentGridPos;
             Turn(relativeGridPos);
@@ -45,20 +58,15 @@ public class EnemyCharacter : CharacterBase
             if (!CheckTargetCellForObjects(targetGridPos, layerMask))
             {
                 MoveTo(targetGridPos);
-                canAct = false;
-                
+                //canAct = false;
             }
             else
             {
-                Attack();
-                canAct = false;
-
+                Attack();           //WIP
+                OnActionFinished();
             }
 
-            while (!canAct) //yield condition that makes enemy wait until next available turn
-            {
-                yield return null;
-            }
+            
 
             if(i == modifiedWaypoints.Length - 1)
             {
@@ -74,10 +82,13 @@ public class EnemyCharacter : CharacterBase
 
     private void OnMoveFinished()
     {
-        canAct = true;
-        if(!animator) { return; }
+        //canAct = true;
+        OnActionFinished();
 
-        animator.SetBool("Moving", false);
+        /* if(!animator) { return; }
+
+        animator.SetBool("Moving", false); */
+        
 
     }
 }

@@ -7,9 +7,11 @@ public class PlayerCharacter : CharacterBase
 {
     void Start()
     {
-        Init();
+        InitBase();
         MoveFinished += OnMoveFinished;
         canAct = true;
+        GameController.Instance.RegisterPlayer(this);
+        
     }
 
     
@@ -17,42 +19,48 @@ public class PlayerCharacter : CharacterBase
     {
         if (canAct && PlayerInput())
         {
+            OnActionInitiated();
             Vector3Int direction = Vector3Int.RoundToInt(new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0));
             Vector3Int targetGridPos = GetGridPosFromRelativeCellPos(direction);
 
             Turn(direction);
-            if (animator)
-            {
-                animator.SetBool("Moving", true);
-            }
-
+            
             LayerMask layerMask = LayerMask.GetMask("Hurdle");
             if (!CheckTargetCellForObjects(targetGridPos, layerMask))
             {
+                
                 MoveTo(targetGridPos);
-                canAct = false;
+                //canAct = false;
             }
+            else
+            {
+                animator.SetTrigger("Walk");
+                OnActionFinished();
+            }
+
+            
         }
-        else if (canAct && animator.GetBool("Moving"))
+        /* else if (canAct && animator.GetBool("Moving"))
         {
             animator.SetBool("Moving", false);
             //animMarkedForDisable = false;
-        }
+        } */
     }
 
     private static bool PlayerInput()
     {
-        return Mathf.Abs(Input.GetAxis("Horizontal")) > 0 || Mathf.Abs(Input.GetAxis("Vertical")) > 0;
+        return Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0 || Mathf.Abs(Input.GetAxisRaw("Vertical")) > 0;
     }
 
     private void OnMoveFinished()
     {
-        canAct = true;
-        if(!animator) { return; }
+        //canAct = true;
+        OnActionFinished();
 
-        if(!PlayerInput())
-        {
-            animator.SetBool("Moving", false);
-        }
+        /* if(!animator) { return; }
+
+        animator.SetBool("Moving", false); */
+
+
     }
 }

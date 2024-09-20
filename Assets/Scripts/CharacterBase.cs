@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEditor.Animations;
 using UnityEngine;
 
-public delegate void  MoveDelegate();
+public delegate void  BasicDelegate();
+
+public delegate void ActionDelegate(CharacterBase character);
 
 /// <summary>
 /// Base class for entities that can move and attack
@@ -19,9 +21,13 @@ public abstract class CharacterBase : MonoBehaviour
     protected bool isAlive;
     protected bool canAct;
 
-    public event MoveDelegate MoveFinished;
+    public bool CanAct { get=>canAct; set=>canAct = value;}
 
-    protected void Init()
+    public event BasicDelegate MoveFinished;
+    public event ActionDelegate ActionInitiated;
+    public event ActionDelegate ActionFinished;
+
+    protected void InitBase()
     {
         currentHealth = maxHealth;
         isAlive = true;
@@ -33,7 +39,7 @@ public abstract class CharacterBase : MonoBehaviour
 
     private void Start() 
     {
-        Init();
+        InitBase();
     }
 
 /// <summary>
@@ -96,6 +102,10 @@ public abstract class CharacterBase : MonoBehaviour
 
     private IEnumerator MoveCoroutine(Vector3 targetPos)
     {
+        if (animator)
+        {
+            animator.SetBool("Moving", true);
+        }
         Vector3 startPos = transform.localPosition;
         float speed = Vector3.Distance(startPos, targetPos) / GameController.Instance.CharacterMoveTime;
         float timer = 0f;
@@ -110,6 +120,11 @@ public abstract class CharacterBase : MonoBehaviour
         }
 
         transform.localPosition = targetPos;
+
+        if (animator)
+        {
+            animator.SetBool("Moving", false);
+        }
 
         MoveFinished?.Invoke();
     }
@@ -146,6 +161,24 @@ public abstract class CharacterBase : MonoBehaviour
     {
         isAlive = false;
         animator.SetTrigger("Death");
+    }
+
+    protected virtual void OnActionInitiated()
+    {
+        if (animator)
+        {
+            animator.speed = 1 / (GameController.Instance.CharacterMoveTime * 2.5f);
+        }
+        ActionInitiated?.Invoke(this);
+    }
+
+    protected virtual void OnActionFinished()
+    {
+        if (animator)
+        {
+            animator.speed = 1;
+        }
+        ActionFinished?.Invoke(this);
     }
 
 }
