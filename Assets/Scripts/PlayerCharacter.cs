@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//TODO: zombie ai, game controller tracking turns, start location and goal;
 public class PlayerCharacter : CharacterBase
 {
-    private bool canAct;
     void Start()
     {
         Init();
@@ -18,20 +18,17 @@ public class PlayerCharacter : CharacterBase
         if (canAct && PlayerInput())
         {
             Vector3Int direction = Vector3Int.RoundToInt(new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0));
-            Vector3Int currentGridPos = grid.LocalToCell(transform.localPosition);
-            Vector3Int targetGridPos = currentGridPos + direction;
+            Vector3Int targetGridPos = GetGridPosFromRelativeCellPos(direction);
 
             Turn(direction);
             if (animator)
             {
                 animator.SetBool("Moving", true);
             }
-            
-            if (CheckTargetCellEmpty(targetGridPos))
-            {
 
-                
-                
+            LayerMask layerMask = LayerMask.GetMask("Hurdle");
+            if (!CheckTargetCellForObjects(targetGridPos, layerMask))
+            {
                 RelativeMoveTo(direction);
                 canAct = false;
             }
