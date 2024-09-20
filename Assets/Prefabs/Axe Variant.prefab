@@ -63,6 +63,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5409340933053809108, guid: 90785c74b47617741aa5d3792af17448, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4821529801555557638}
+    - targetCorrespondingSourceObject: {fileID: 5409340933053809108, guid: 90785c74b47617741aa5d3792af17448, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4454098171768722781}
   m_SourcePrefab: {fileID: 100100000, guid: 90785c74b47617741aa5d3792af17448, type: 3}
 --- !u!1 &6257405857107773721 stripped
 GameObject:
@@ -83,3 +86,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageType: 0
   weaponAttackOffset: {x: 0, y: -0.15, z: 0}
+  damage: 10
+--- !u!65 &4454098171768722781
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6257405857107773721}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.36438, y: 0.9218812, z: 0.07258974}
+  m_Center: {x: 0, y: 0.21830297, z: -0.0012211055}

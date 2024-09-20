@@ -19,15 +19,17 @@ public abstract class CharacterBase : MonoBehaviour
     protected Grid grid;
 
     protected int currentHealth;
-
     protected bool isAlive;
     protected bool canAct;
-
     public bool CanAct { get=>canAct; set=>canAct = value;}
 
     public event BasicDelegate MoveFinished;
+    public event BasicDelegate AttackFinished;
     public event ActionDelegate ActionInitiated;
     public event ActionDelegate ActionFinished;
+
+    //private Vector3 gizmoCenter, gizmoSize;
+
 
     protected void InitBase()
     {
@@ -43,6 +45,11 @@ public abstract class CharacterBase : MonoBehaviour
     {
         InitBase();
     }
+
+    /* private void OnDrawGizmos() 
+    {
+        Gizmos.DrawCube(gizmoCenter, gizmoSize);
+    } */
 
 /// <summary>
 /// Makes the character move to a location on the grid
@@ -89,12 +96,14 @@ public abstract class CharacterBase : MonoBehaviour
     protected bool CheckTargetCellForObjects(Vector3Int relativeGridPosition, LayerMask layerMask, out Collider hitCollider)
     {
         Bounds bounds = grid.GetBoundsLocal(relativeGridPosition) ;
-        //Vector3 posCheck = grid.LocalToWorld(GetLocalPosFromCellPos(cellPosition));
-        //Vector3 direction = posCheck - boxCastCenter;
-
         Vector3 boxCenter = bounds.center + Vector3.one * 0.5f;
-        Collider[] colliders = Physics.OverlapBox(boxCenter, bounds.extents * 0.8f, Quaternion.identity, layerMask);
+        Vector3 boxSize =  new Vector3(bounds.extents.x * 0.8f, bounds.extents.y * 2f, bounds.extents.z * 0.8f);
+        //gizmoCenter = boxCenter;
+        //gizmoSize = boxSize;
+
+        Collider[] colliders = Physics.OverlapBox(boxCenter, boxSize, Quaternion.identity, layerMask);
         hitCollider = null;
+
         if (colliders.Length > 0)
         {
             hitCollider = colliders[0];
@@ -114,7 +123,7 @@ public abstract class CharacterBase : MonoBehaviour
         float speed = Vector3.Distance(startPos, targetPos) / GameController.Instance.CharacterMoveTime;
         float timer = 0f;
 
-        while ( timer < GameController.Instance.CharacterMoveTime)// && Vector3.Distance(transform.localPosition, targetPos) > 0.01f)
+        while ( timer < GameController.Instance.CharacterMoveTime)
         {
             Vector3 step = Vector3.MoveTowards(transform.localPosition, targetPos, speed * Time.deltaTime);
             transform.localPosition = step;
@@ -143,6 +152,13 @@ public abstract class CharacterBase : MonoBehaviour
         transform.LookAt(targetPos);
     }
 
+/// <summary>
+/// Tries to attack a particular type of entity at the given cell
+/// </summary>
+/// <param name="damage">Damage applied by the attack</param>
+/// <param name="damageType">The type of damage; can be slashing or blunt with the recipient potentially having different resistances to each</param>
+/// <param name="targetGridPos">The cell to attack</param>
+/// <param name="attackLayer">The type of entity to attack defined by passing in the layer assigned to it: Player or Enemy</param>
     public void Attack(int damage, DamageTypes damageType, Vector3Int targetGridPos, LayerMask attackLayer)
     {
         if(animator)
@@ -152,29 +168,22 @@ public abstract class CharacterBase : MonoBehaviour
 
         if(CheckTargetCellForObjects(targetGridPos, attackLayer, out Collider hitCollider))
         {
-            if(hitCollider.TryGetComponent<CharacterBase>(out CharacterBase hitCharacter))
+            if(hitCollider.TryGetComponent(out CharacterBase hitCharacter))
             {
                 hitCharacter.HandleHit(damage, damageType);
             }
         }
+        
+        AttackFinished?.Invoke();
     }
     public void HandleHit( int damage, DamageTypes damageType = DamageTypes.Slash)
     {
-        float resistanceTouse;
-
-        switch(damageType)
+        var resistanceTouse = damageType switch //Fancy new switch expression that I'm learning about for the first time
         {
-            case DamageTypes.Slash:
-                resistanceTouse = slashResistance;
-                break;
-            case DamageTypes.Blunt:
-                resistanceTouse = bluntResistance;
-                break;
-            default:
-                resistanceTouse = 100f;
-                break;
-        }
-
+            DamageTypes.Slash => slashResistance,
+            DamageTypes.Blunt => bluntResistance,
+            _ => 100f,
+        };
         float modifedDamage = damage * resistanceTouse / 100f;
         ApplyDamage(Mathf.FloorToInt(modifedDamage));
     }

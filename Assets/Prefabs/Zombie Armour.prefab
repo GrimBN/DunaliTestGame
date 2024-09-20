@@ -58,7 +58,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -927199367670048503, guid: 8f7380da49034cd488ddff94b1ac35d1, type: 3}
       propertyPath: m_Name
-      value: Zombie1
+      value: Zombie Armour
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -111,11 +111,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c50434c5d90ac39499fd9ef73bdb7bf0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 0
-  animator: {fileID: 0}
-  grid: {fileID: 0}
+  maxHealth: 10
+  slashResistance: 100
+  bluntResistance: 0
+  attackDamage: 0
   waypoints:
   - {x: 1, y: 0, z: 0}
   - {x: 1, y: 1, z: 0}
   - {x: 1, y: 2, z: 0}
   - {x: 2, y: 2, z: 0}
+  damageTypeVulnerableTo: 0

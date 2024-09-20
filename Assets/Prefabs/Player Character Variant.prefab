@@ -544,10 +544,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da96c853c6f189544b367ad54e2d5425, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 10
+  slashResistance: 0
+  bluntResistance: 0
   weaponParentRest: {fileID: 2991221833729905450}
   weaponParentAttack: {fileID: 2991221833034756446}
-  weaponAttackOffset: {x: 0, y: -0.15, z: 0}
+  attackAnimationClip: {fileID: 381366046490202241, guid: ee5e404da5ae61d4291af7340ab39b19, type: 3}
 --- !u!136 &8396905332271666186
 CapsuleCollider:
   m_ObjectHideFlags: 0
