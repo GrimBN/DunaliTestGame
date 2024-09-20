@@ -39,9 +39,10 @@ public class GameController : MonoBehaviour
     private void Start() 
     {
         winArea.PlayerEnteredWinArea += ProcessWin;
-        TurnStart();
+        //TurnStart();
     }
-    private void TurnStart()
+    
+    public void TurnStart()
     {
         enemiesLeftToTakeAction = enemies.Count;
         player.CanAct = true;
