@@ -545,8 +545,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  animator: {fileID: 0}
-  grid: {fileID: 0}
+  weaponParentRest: {fileID: 2991221833729905450}
+  weaponParentAttack: {fileID: 2991221833034756446}
+  weaponAttackOffset: {x: 0, y: -0.15, z: 0}
 --- !u!136 &8396905332271666186
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -570,3 +571,13 @@ CapsuleCollider:
   m_Height: 1.6751343
   m_Direction: 1
   m_Center: {x: 0, y: 0.8797359, z: 0}
+--- !u!4 &2991221833034756446 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4957605394132608681, guid: 4f46098734d87e24490aef9267915ad2, type: 3}
+  m_PrefabInstance: {fileID: 7876241312414455799}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2991221833729905450 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4957605392632071389, guid: 4f46098734d87e24490aef9267915ad2, type: 3}
+  m_PrefabInstance: {fileID: 7876241312414455799}
+  m_PrefabAsset: {fileID: 0}

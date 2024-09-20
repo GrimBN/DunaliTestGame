@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class EnemyCharacter : CharacterBase
 {
+    [SerializeField] private int attackDamage;
+
     [Tooltip("These are the cell locations relative to the enemy's <b>STARTING</b> position on the grid." +
         "\nThe enemy automatically traces its path back upon reaching the end and then loops (including the starting position).")]
     [SerializeField] private Vector3Int[] waypoints;
     private Vector3Int[] modifiedWaypoints;
 
     private Vector3Int startGridPos;
+
+    [SerializeField] private DamageTypes damageTypeVulnerableTo;
 
     void Start()
     {
@@ -34,7 +38,7 @@ public class EnemyCharacter : CharacterBase
     private IEnumerator Patrol()
     {
         int loopDirection = 1;
-        for(int i = 1; i < modifiedWaypoints.Length && i >=0; i+= loopDirection) //Start at index 1 to skip start position
+        for(int i = 1; i < modifiedWaypoints.Length && i >=0; ) //Start at index 1 to skip start position
         {
             while (!canAct) //yield condition that makes enemy wait until next available turn
             {
@@ -55,15 +59,16 @@ public class EnemyCharacter : CharacterBase
 
             LayerMask layerMask = LayerMask.GetMask("Player");
 
-            if (!CheckTargetCellForObjects(targetGridPos, layerMask))
+            if (!CheckTargetCellForObjects(targetGridPos, layerMask, out Collider hitCollider))
             {
                 MoveTo(targetGridPos);
                 //canAct = false;
             }
             else
             {
-                Attack();           //WIP
+                Attack(attackDamage, DamageTypes.Slash, targetGridPos, layerMask);
                 OnActionFinished();
+                continue; //Don't want to skip a movement if spending a turn attacking therefore skipping the iterator increment at the bottom
             }
 
             
@@ -77,6 +82,7 @@ public class EnemyCharacter : CharacterBase
                 loopDirection = 1;
                 
             }
+            i+= loopDirection;
         }
     }
 

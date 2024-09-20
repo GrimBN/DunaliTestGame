@@ -13,6 +13,8 @@ public delegate void ActionDelegate(CharacterBase character);
 public abstract class CharacterBase : MonoBehaviour
 {
     [SerializeField] protected int maxHealth;
+    [SerializeField, Range(0f, 100f)] protected float slashResistance;
+    [SerializeField, Range(0f, 100f)] protected float bluntResistance;
     protected Animator animator;
     protected Grid grid;
 
@@ -84,7 +86,7 @@ public abstract class CharacterBase : MonoBehaviour
 /// <param name="relativeGridPosition"></param>
 /// <param name="layerMask">Layer mask that defines which type of objects to check for</param>
 /// <returns>Boolean value for if an object was detected: True for one or more objects, False for none</returns>
-    protected bool CheckTargetCellForObjects(Vector3Int relativeGridPosition, LayerMask layerMask)
+    protected bool CheckTargetCellForObjects(Vector3Int relativeGridPosition, LayerMask layerMask, out Collider hitCollider)
     {
         Bounds bounds = grid.GetBoundsLocal(relativeGridPosition) ;
         //Vector3 posCheck = grid.LocalToWorld(GetLocalPosFromCellPos(cellPosition));
@@ -92,8 +94,10 @@ public abstract class CharacterBase : MonoBehaviour
 
         Vector3 boxCenter = bounds.center + Vector3.one * 0.5f;
         Collider[] colliders = Physics.OverlapBox(boxCenter, bounds.extents * 0.8f, Quaternion.identity, layerMask);
+        hitCollider = null;
         if (colliders.Length > 0)
         {
+            hitCollider = colliders[0];
             Debug.Log(colliders[0].gameObject.name);
         }
 
@@ -139,9 +143,40 @@ public abstract class CharacterBase : MonoBehaviour
         transform.LookAt(targetPos);
     }
 
-    public void Attack()
+    public void Attack(int damage, DamageTypes damageType, Vector3Int targetGridPos, LayerMask attackLayer)
     {
+        if(animator)
+        {
+            animator.SetTrigger("Attack");
+        }
 
+        if(CheckTargetCellForObjects(targetGridPos, attackLayer, out Collider hitCollider))
+        {
+            if(hitCollider.TryGetComponent<CharacterBase>(out CharacterBase hitCharacter))
+            {
+                hitCharacter.HandleHit(damage, damageType);
+            }
+        }
+    }
+    public void HandleHit( int damage, DamageTypes damageType = DamageTypes.Slash)
+    {
+        float resistanceTouse;
+
+        switch(damageType)
+        {
+            case DamageTypes.Slash:
+                resistanceTouse = slashResistance;
+                break;
+            case DamageTypes.Blunt:
+                resistanceTouse = bluntResistance;
+                break;
+            default:
+                resistanceTouse = 100f;
+                break;
+        }
+
+        float modifedDamage = damage * resistanceTouse / 100f;
+        ApplyDamage(Mathf.FloorToInt(modifedDamage));
     }
 
     public void ApplyDamage(int damage)
@@ -156,6 +191,7 @@ public abstract class CharacterBase : MonoBehaviour
             }
         }
     }
+
 
     private void HandleDeath()
     {
