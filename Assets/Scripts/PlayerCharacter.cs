@@ -29,7 +29,7 @@ public class PlayerCharacter : CharacterBase
             LayerMask layerMask = LayerMask.GetMask("Hurdle");
             if (!CheckTargetCellForObjects(targetGridPos, layerMask))
             {
-                RelativeMoveTo(direction);
+                MoveTo(targetGridPos);
                 canAct = false;
             }
         }

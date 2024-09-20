@@ -11,9 +11,8 @@ public delegate void  MoveDelegate();
 public abstract class CharacterBase : MonoBehaviour
 {
     [SerializeField] protected int maxHealth;
-    [SerializeField] protected Animator animator;
-    [SerializeField] protected Grid grid;
-    //[SerializeField] protected LayerMask layerMask1;
+    protected Animator animator;
+    protected Grid grid;
 
     protected int currentHealth;
 
@@ -38,18 +37,18 @@ public abstract class CharacterBase : MonoBehaviour
     }
 
 /// <summary>
-/// Makes the character move to a location on the grid relative to its current location
+/// Makes the character move to a location on the grid
 /// </summary>
-/// <param name="relativeGridPosition"> The relative position on the grid to move to</param>
-    protected void RelativeMoveTo(Vector3Int relativeGridPosition)
+/// <param name="targetGridPos"> The position on the grid to move to</param>
+    protected void MoveTo(Vector3Int targetGridPos )
     {
-        Vector3 targetPos = GetLocalPosFromRelativeCellPos(relativeGridPosition);
+        Vector3 targetPos = new Vector3(grid.GetCellCenterLocal(targetGridPos).x, 0f, grid.GetCellCenterLocal(targetGridPos).z);
 
         StartCoroutine(MoveCoroutine(targetPos));
     }
 
 /// <summary>
-/// Returns the local position of of a cell relative to the character's current grid position
+/// Returns the local position of a cell relative to the character's current grid position
 /// </summary>
 /// <param name="relativeGridPosition"></param>
 /// <returns>Local position of cell as a Vector3</returns>
@@ -145,7 +144,8 @@ public abstract class CharacterBase : MonoBehaviour
 
     private void HandleDeath()
     {
-        isAlive = true;
+        isAlive = false;
+        animator.SetTrigger("Death");
     }
 
 }

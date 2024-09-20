@@ -151,7 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65b2e5ef3cea46d40ae0a9b0a2494212, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterMoveTime: 0.2
+  characterMoveTime: 1
 --- !u!4 &79129122
 Transform:
   m_ObjectHideFlags: 0
@@ -280,6 +280,14 @@ PrefabInstance:
     - target: {fileID: 3838040520393252584, guid: adaf705a3ec53cc4e947d7cf1be627dd, type: 3}
       propertyPath: m_Name
       value: Zombie1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8316862755972011609, guid: adaf705a3ec53cc4e947d7cf1be627dd, type: 3}
+      propertyPath: relativeWaypoints.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8316862755972011609, guid: adaf705a3ec53cc4e947d7cf1be627dd, type: 3}
+      propertyPath: relativeWaypoints.Array.data[1].x
+      value: -1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
