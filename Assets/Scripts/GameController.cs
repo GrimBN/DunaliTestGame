@@ -6,15 +6,23 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
 
-    [SerializeField]private float characterMoveTime = 0.5f;
+    [SerializeField] private float characterMoveTime = 0.5f;
+    [SerializeField] private Transform startPosition;
+    [SerializeField] private WinArea winArea;
+    
     public float CharacterMoveTime { get => characterMoveTime;}
 
     public static GameController Instance;
 
     private int enemiesLeftToTakeAction;
 
+    private bool playerHasWon;
+
     private PlayerCharacter player;
     private List<EnemyCharacter> enemies = new List<EnemyCharacter>();
+
+    public event BasicDelegate WinEvent;
+    public event BasicDelegate LoseEvent;
 
     private void Awake() 
     {
@@ -30,6 +38,7 @@ public class GameController : MonoBehaviour
 
     private void Start() 
     {
+        winArea.PlayerEnteredWinArea += ProcessWin;
         TurnStart();
     }
     private void TurnStart()
@@ -58,6 +67,7 @@ public class GameController : MonoBehaviour
         player = playerCharacter;
         player.ActionInitiated += CharacterTookAction;
         player.ActionFinished += CharacterFinishedAction;
+        player.CharacterDied += CharacterDeathOccured;
     }
 
     private void CharacterTookAction(CharacterBase character)
@@ -94,7 +104,8 @@ public class GameController : MonoBehaviour
     {
         if(character == player)
         {
-            //handle game over
+            Debug.Log(character);
+            LoseEvent?.Invoke();
         }
         else
         {
@@ -119,7 +130,10 @@ public class GameController : MonoBehaviour
 
     private void ProcessEndTurn()
     {
-        TurnStart();
+        if(!playerHasWon)
+        {
+            TurnStart();
+        }
     }
 
     private void AllowOtherCharacterActions()
@@ -128,5 +142,11 @@ public class GameController : MonoBehaviour
         {
             enemy.CanAct = true;
         }
+    }
+
+    private void ProcessWin(CharacterBase character)
+    {
+        playerHasWon = true;
+        WinEvent?.Invoke();
     }
 }
