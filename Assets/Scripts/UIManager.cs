@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI winText;
     [SerializeField] private TextMeshProUGUI loseText;
+    [SerializeField] private Button restartButton;
 
     private void Start() 
     {
@@ -16,16 +17,19 @@ public class UIManager : MonoBehaviour
 
         winText.gameObject.SetActive(false);
         loseText.gameObject.SetActive(false);
+        restartButton.gameObject.SetActive(false);
 
     }
 
     private void WinUI()
     {
         winText.gameObject.SetActive(true);
+        restartButton.gameObject.SetActive(true);
     }
 
     private void LoseUI()
     {
         loseText.gameObject.SetActive(true);
+        restartButton.gameObject.SetActive(true);
     }
 }

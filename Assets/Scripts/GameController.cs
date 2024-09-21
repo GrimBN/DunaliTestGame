@@ -61,6 +61,8 @@ public class GameController : MonoBehaviour
         enemy.ActionInitiated += CharacterTookAction;
         enemy.ActionFinished += CharacterFinishedAction;
         enemy.CharacterDied += CharacterDeathOccured;
+        enemy.CanAct = false;
+        enemy.TurnTaken = false;
     }
 
     public void RegisterPlayer(PlayerCharacter playerCharacter)
@@ -69,6 +71,8 @@ public class GameController : MonoBehaviour
         player.ActionInitiated += CharacterTookAction;
         player.ActionFinished += CharacterFinishedAction;
         player.CharacterDied += CharacterDeathOccured;
+        player.CanAct = false;
+        player.TurnTaken = false;
     }
 
     private void CharacterTookAction(CharacterBase character)
